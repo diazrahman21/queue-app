@@ -1,52 +1,244 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Antrian Stand Pameran
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi Laravel untuk manajemen antrian dan pemesanan stand di pameran seni dengan 2 stand berbeda (Foto dan Lukis) yang memiliki kuota harian maksimal.
 
-## About Laravel
+## 📋 Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- ✅ **Pemesanan Online**: Formulir pemesanan stand dengan validasi lengkap
+- ✅ **Manajemen Kuota**: Pembatasan kuota harian per stand (Foto: 50/hari, Lukis: 30/hari)
+- ✅ **Pengecekan Duplikat**: Mencegah satu email memesan stand yang sama di tanggal yang sama
+- ✅ **Nomor Antri Otomatis**: Generate nomor antri unik dengan format `{KODE_STAND}{TANGGAL}{COUNTER}`
+- ✅ **AJAX Form Submission**: Pemesanan tanpa reload halaman
+- ✅ **Tiket Digital**: Download tiket sebagai PDF atau JPG
+- ✅ **Admin DataTable**: Daftar lengkap semua pesanan dengan fitur hapus
+- ✅ **REST API**: API lengkap untuk integrasi dengan aplikasi lain
+- ✅ **Responsive Design**: Bootstrap 3.3.7 untuk tampilan responsif
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📦 Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.1+
+- Composer
+- MySQL/SQLite
+- Node.js & npm (optional, untuk Vite)
 
-## Learning Laravel
+## 🚀 Instalasi
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 1. Clone dan Setup
+```bash
+git clone <repository>
+cd queue-app
+composer install
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Konfigurasi Environment
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Laravel Sponsors
+### 3. Database
+```bash
+php artisan migrate
+php artisan db:seed --class=QuotaStandSeeder
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 4. Jalankan Server
+```bash
+php artisan serve
+```
 
-### Premium Partners
+Akses aplikasi di: `http://127.0.0.1:8000/antrian`
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 📱 Penggunaan
 
-## Contributing
+### Membuat Pesanan
+1. Pilih Stand (Foto/Lukis)
+2. Masukkan Nama dan Email
+3. Pilih Tanggal
+4. Klik "Buat Pesanan"
+5. Download tiket (PDF/JPG)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Melihat Daftar Pesanan
+- Tab "Daftar Pesanan" menampilkan semua booking
+- Fitur delete untuk menghapus pesanan
 
-## Code of Conduct
+## 🔌 API Documentation
+
+### Base URL
+```
+http://127.0.0.1:8000/api
+```
+
+### Endpoints
+
+#### 1. Buat Pesanan
+```http
+POST /antrian
+Content-Type: application/json
+X-CSRF-TOKEN: {token}
+
+{
+  "nama": "Budi Santoso",
+  "email": "budi@example.com",
+  "tanggal_pesan": "2026-04-18",
+  "kd_stand": "FT"
+}
+```
+
+**Response (201):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "nama": "Budi Santoso",
+    "email": "budi@example.com",
+    "tanggal_pesan": "2026-04-18",
+    "kd_stand": "FT",
+    "nomor_antri": "FT20260418001",
+    "created_at": "2026-04-18T10:30:00Z"
+  }
+}
+```
+
+#### 2. Daftar Pesanan
+```http
+GET /antrian
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "nama": "Budi Santoso",
+      "email": "budi@example.com",
+      "tanggal_pesan": "2026-04-18",
+      "kd_stand": "FT",
+      "nomor_antri": "FT20260418001"
+    }
+  ]
+}
+```
+
+#### 3. Detail Pesanan
+```http
+GET /antrian/{id}
+```
+
+#### 4. Hapus Pesanan
+```http
+DELETE /antrian/{id}
+X-CSRF-TOKEN: {token}
+```
+
+#### 5. Cek Kuota
+```http
+GET /quota?kd_stand=FT&tanggal_pesan=2026-04-18
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "kd_stand": "FT",
+    "tanggal_pesan": "2026-04-18",
+    "kuota_total": 50,
+    "kuota_terpakai": 12,
+    "kuota_tersisa": 38
+  }
+}
+```
+
+## 📊 Database Schema
+
+### Tabel: `tbl_quota_stand`
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INT | Primary Key |
+| kd_stand | VARCHAR(10) | Kode Stand (FT/LK) - Unique |
+| nama_stand | VARCHAR(255) | Nama Stand |
+| kuota | INT | Kuota Harian |
+| created_at | TIMESTAMP | Waktu Buat |
+| updated_at | TIMESTAMP | Waktu Update |
+
+### Tabel: `tbl_antri_stand`
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INT | Primary Key |
+| nama | VARCHAR(255) | Nama Pemesan |
+| email | VARCHAR(255) | Email Pemesan |
+| tanggal_pesan | DATE | Tanggal Pesanan |
+| kd_stand | VARCHAR(10) | Kode Stand (FK) |
+| nomor_antri | VARCHAR(50) | Nomor Antri - Unique |
+| created_at | TIMESTAMP | Waktu Buat |
+| updated_at | TIMESTAMP | Waktu Update |
+
+**Indexes:**
+- `(kd_stand, tanggal_pesan)` - Untuk pengecekan kuota
+- `(email, kd_stand, tanggal_pesan)` - Untuk pengecekan duplikat
+
+## 🏗️ Project Structure
+
+```
+queue-app/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── Api/
+│   │           └── AntrianController.php
+│   └── Models/
+│       ├── QuotaStand.php
+│       └── AntriStand.php
+├── database/
+│   ├── migrations/
+│   │   ├── 2026_04_18_000001_create_tbl_quota_stand_table.php
+│   │   └── 2026_04_18_000002_create_tbl_antri_stand_table.php
+│   └── seeders/
+│       └── QuotaStandSeeder.php
+├── resources/
+│   └── views/
+│       └── antrian/
+│           └── index.blade.php
+├── routes/
+│   ├── api.php
+│   └── web.php
+└── public/
+    └── index.php
+```
+
+## 🛠️ Validasi Form
+
+| Field | Rules | Pesan |
+|-------|-------|-------|
+| nama | required, string, max:255 | Nama harus diisi, maksimal 255 karakter |
+| email | required, email, max:255 | Email harus valid |
+| tanggal_pesan | required, date_format:Y-m-d | Format tanggal harus YYYY-MM-DD |
+| kd_stand | required, in:FT,LK | Hanya FT atau LK |
+
+## 🔒 Validasi Bisnis
+
+1. **Kuota Harian**: Sistem otomatis menolak pesanan jika kuota sudah penuh
+2. **Duplikat Email**: Satu email hanya bisa memesan 1x per stand per tanggal
+3. **Tanggal**: Tidak bisa memesan tanggal lampau
+4. **Format Nomor Antri**: `{KODE_STAND}{YYYY}{MM}{DD}{COUNTER:3digit}`
+   - Contoh: `FT20260418001`, `LK20260418023`
+
+## 📝 Teknologi
+
+- **Backend**: Laravel 11, PHP 8.1+
+- **Frontend**: HTML5, CSS3, Bootstrap 3.3.7
+- **JavaScript**: jQuery 1.12.4, jQuery UI 1.13.2, DataTables 1.11.5
+- **PDF/Image**: html2canvas 1.4.1, jsPDF 2.5.1
+- **Database**: MySQL/SQLite
+- **API**: RESTful JSON
+
+## 📄 License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
