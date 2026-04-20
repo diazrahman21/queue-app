@@ -71,11 +71,24 @@ class AntrianController extends Controller
             ], 422);
         }
 
-        // Generate nomor_antri
-        $counter = $bookingCount + 1;
-        $formattedDate = date('Ymd', strtotime($tanggalPesan));
-        $formattedCounter = str_pad($counter, 3, '0', STR_PAD_LEFT);
-        $nomorAntri = $kdStand . $formattedDate . $formattedCounter;
+        $lastNomor = AntriStand::where('kd_stand', $kdStand)
+            ->where('tanggal_pesan', $tanggalPesan)
+            ->max('nomor_antri');
+
+            $lastNumber = $lastNomor ?
+            intval(substr($lastNomor, -3)) : 0;
+            
+            $nextNumber = $lastNumber + 1;
+            $formattedDate = date('Ymd', strtotime($tanggalPesan));
+            $formattedCounter = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+            $nomorAntri = $kdStand . $formattedDate . $formattedCounter;
+            
+
+        // // Generate nomor_antri
+        // $counter = $bookingCount + 1;
+        // $formattedDate = date('Ymd', strtotime($tanggalPesan));
+        // $formattedCounter = str_pad($counter, 3, '0', STR_PAD_LEFT);
+        // $nomorAntri = $kdStand . $formattedDate . $formattedCounter;
 
         // Create booking
         $booking = AntriStand::create([
